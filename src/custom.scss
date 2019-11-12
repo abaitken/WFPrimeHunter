@@ -1,0 +1,57 @@
+@import "~bootswatch/dist/superhero/variables";
+@import "~bootstrap/scss/bootstrap";
+@import "~bootswatch/dist/superhero/bootswatch";
+@import "./components/inventory.scss";
+
+[draggable] {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  /* Required to make elements draggable in old WebKit */
+  -khtml-user-drag: element;
+  -webkit-user-drag: element;
+}
+
+.dragItem {
+  cursor: move;
+}
+
+.dragItem.dragging {
+  opacity: 0.5;
+}
+
+.dragItem.insertAbove {
+  border-top: 2px solid theme-color("dark");
+}
+
+.dragItem.insertBelow {
+  border-bottom: 2px solid theme-color("dark");
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.folderItemCell {
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+  background-color: theme-color("light");
+  padding: 0.75rem 1.25rem;
+  border: 1px solid theme-color("dark");
+}
+
+.folderItemIcon {
+  vertical-align: middle;
+  margin: 0.5rem;
+}
+
+.folderItemTitle {
+  vertical-align: middle;
+  margin: 0.5rem;
+}
+
+.folderItemsRegion {
+  max-height: 70vh;
+}
+
