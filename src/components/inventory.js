@@ -2,14 +2,32 @@ const view = require("./inventory.html");
 
 const PAGE_SIZE = 25;
 
-function PagedItems(ko) {
-    var self = this;
+function ItemSortComparer(a, b) {
+    return a.name > b.name ? 1 : -1;
+}
 
+function StringContainsCaseInsensitive(haystack, needle) {
+    return haystack.toLowerCase().indexOf(needle.toLowerCase()) !== -1;
+}
+
+function PagedItems(ko, filter) {
+    var self = this;
     self.items = ko.observableArray();
+
+    self.filteredItems = ko.computed(function () {
+        if (!filter()) {
+            return self.items();
+        } else {
+            return ko.utils.arrayFilter(self.items(), function (item) {
+                return StringContainsCaseInsensitive(item.name, filter());
+            });
+        }
+    });
+
     self.pageIndex = ko.observable(0);
     self.pageCount = ko.computed(function () {
-        var result = Math.floor(self.items().length / PAGE_SIZE);
-        result += self.items().length % PAGE_SIZE > 0 ? 1 : 0;
+        var result = Math.floor(self.filteredItems().length / PAGE_SIZE);
+        result += self.filteredItems().length % PAGE_SIZE > 0 ? 1 : 0;
         return result - 1;
     });
     self.pages = ko.computed(function () {
@@ -26,7 +44,7 @@ function PagedItems(ko) {
 
     self.pagedItems = ko.computed(function () {
         var startIndex = self.pageIndex() * PAGE_SIZE;
-        return self.items.slice(startIndex, startIndex + PAGE_SIZE);
+        return self.filteredItems().slice(startIndex, startIndex + PAGE_SIZE);
     });
 
     self.hasPrevious = ko.computed(function () {
@@ -51,6 +69,7 @@ function PagedItems(ko) {
 
     self.addItem = function (item) {
         self.items.push(item);
+        self.items.sort(ItemSortComparer);
     };
 
     self.removeItem = function (item) {
@@ -63,15 +82,16 @@ module.exports = function (ko, $) {
     return {
         viewModel: function (root) {
             var self = this;
-            self.acquired = new PagedItems(ko);
-            self.required = new PagedItems(ko);
+            self.filterText = ko.observable();
+            self.acquired = new PagedItems(ko, self.filterText);
+            self.required = new PagedItems(ko, self.filterText);
 
             self._moveItem = function (item, from, to) {
                 from.removeItem(item);
                 to.addItem(item);
             };
 
-            self.itemAcquired = function (item) {                
+            self.itemAcquired = function (item) {
                 self.required.removeItem(item);
                 self.acquired.addItem(item);
             };
@@ -99,9 +119,7 @@ module.exports = function (ko, $) {
                                 name: name
                             });
                         }
-                        list.sort(function (a, b) {
-                            return a.name > b.name;
-                        });
+                        list.sort(ItemSortComparer);
                         self.required.items(list);
                     })
                     .fail(function (jqXHR, textStatus, errorThrown) {
