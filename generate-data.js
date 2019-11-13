@@ -30,29 +30,48 @@ function restructureData(data, callback) {
 
   console.log('Reorganising data');
 
-  let ids = [];
+  let itemids = [];
   let items = {};
   let relics = {};
+
+  let tiers = [];
+  let tierLookup = {};
 
   for (let index = 0; index < data['relics'].length; index++) {
     const element = data['relics'][index];
     let tier = element['tier'];
     let name = element['relicName'];
 
-    if (!relics[tier])
+    if (!relics[tier]) {
       relics[tier] = {};
+
+      tierLookup[tier] = tiers.length;
+      tiers.push({
+        name: tier,
+        relics: []
+      });
+    }
 
     if (!relics[tier][name]) {
       relics[tier][name] = {};
       relics[tier][name].rewards = [];
 
+      tiers[tierLookup[tier]].relics.push(name);
+
       for (let j = 0; j < element['rewards'].length; j++) {
         const reward = element['rewards'][j];
         if (!items[reward['_id']]) {
-          items[reward['_id']] = reward['itemName'];
-          ids.push(reward['_id']);
+          items[reward['_id']] = {
+            name: reward['itemName'],
+            relics: []
+          };
+          itemids.push(reward['_id']);
         }
 
+        items[reward['_id']].relics.push({
+          tier: tier,
+          name: name
+        });
         relics[tier][name].rewards.push({
           id: reward['_id'],
           rarity: reward['rarity']
@@ -61,10 +80,12 @@ function restructureData(data, callback) {
     }
   }
 
+
   var restructured = {
-    itemids: ids,
+    itemids: itemids,
     items: items,
-    relics: relics
+    relics: relics,
+    tiers: tiers
   };
 
   callback(restructured);

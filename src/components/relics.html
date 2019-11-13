@@ -1,19 +1,13 @@
 <h1>RELICS</h1>
 
-<!-- ko foreach: tiers -->
-<h2 data-bind="text: name"></h2>
-<table class="table">
-    <thead class="thead-dark">
-        <tr>
-            <th scope="col">Relic</th>
-        </tr>
-    </thead>
-    <tbody>
+<div class="container">
+
+    <!-- ko foreach: filteredRelics -->
+    <h2 data-bind="text: name"></h2>
+    <div class="row">
         <!-- ko foreach: relics -->
-        <tr>
-            <td data-bind="text: name"></td>
-        </tr>
+        <div class="col" data-bind="text: $data"></div>
         <!-- /ko -->
-    </tbody>
-</table>
-<!-- /ko -->
+    </div>
+    <!-- /ko -->
+</div>

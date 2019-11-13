@@ -12,6 +12,49 @@ ko.components.register("inventory", inventory);
 const relics = require("./components/relics")(ko, $);
 ko.components.register("relics", relics);
 
+ko.bindingHandlers.collapseHeader = {
+  init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      // This will be called when the binding is first applied to an element
+      // Set up any initial state, event handlers, etc. here
+      var value = valueAccessor();
+      $(element).attr('id', 'heading' + value);
+  },
+  update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      // This will be called once when the binding is first applied to an element,
+      // and again whenever any observables/computeds that are accessed change
+      // Update the DOM element based on the supplied values here.
+  }
+};
+ko.bindingHandlers.collapseButton = {
+  init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      // This will be called when the binding is first applied to an element
+      // Set up any initial state, event handlers, etc. here
+      var value = valueAccessor();
+      $(element).attr('data-target', '#' + value);
+      $(element).attr('aria-expanded', 'false');
+      $(element).attr('aria-controls', value);
+  },
+  update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      // This will be called once when the binding is first applied to an element,
+      // and again whenever any observables/computeds that are accessed change
+      // Update the DOM element based on the supplied values here.
+  }
+};
+ko.bindingHandlers.collapseTarget = {
+  init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      // This will be called when the binding is first applied to an element
+      // Set up any initial state, event handlers, etc. here
+      var value = valueAccessor();
+      $(element).attr('data-target', '#' + value);
+      $(element).attr('aria-labelledby', 'heading' + value);
+  },
+  update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+      // This will be called once when the binding is first applied to an element,
+      // and again whenever any observables/computeds that are accessed change
+      // Update the DOM element based on the supplied values here.
+  }
+};
+
 function EventRouter() {
   this.subscribers = [];
   this.subscribe = function (callback) {
@@ -52,6 +95,10 @@ function ViewModel() {
   var self = this;
 
   /* Reusable Fns */
+  self.ItemSortComparer = function (a, b) {
+      return a.name > b.name ? 1 : -1;
+  };
+
   self.eventRouter = new EventRouter();
   self.errors = new ErrorHandling();
 
@@ -84,11 +131,40 @@ function ViewModel() {
     self._focusContainer('relics');
   };
 
+  self.requiredItems = ko.observableArray();
+  self.tiers = ko.observable();
+  self.itemRelicLookup = {};
+
   /* INIT */
   self.Init = function () {
     ko.applyBindings(self);
-
     self.inventoryCommand();
+
+    $.ajax({
+      type: "GET",
+      url: 'data.json',
+      dataType: "json",
+      mimeType: "application/json"
+    })
+      .done(function (data) {
+
+        self.itemRelicLookup = data.items;
+        let list = [];
+        for (let index = 0; index < data.itemids.length; index++) {
+          const name = self.itemRelicLookup[data.itemids[index]].name;
+          list.push({
+            id: data.itemids[index],
+            name: name
+          });
+        }
+        list.sort(self.ItemSortComparer);
+        self.requiredItems(list);
+
+        self.tiers(data.tiers);
+      })
+      .fail(function (jqXHR, textStatus, errorThrown) {
+        root.errors.error(errorThrown);
+      });
   };
 }
 

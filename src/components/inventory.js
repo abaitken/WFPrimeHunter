@@ -2,17 +2,13 @@ const view = require("./inventory.html");
 
 const PAGE_SIZE = 25;
 
-function ItemSortComparer(a, b) {
-    return a.name > b.name ? 1 : -1;
-}
-
 function StringContainsCaseInsensitive(haystack, needle) {
     return haystack.toLowerCase().indexOf(needle.toLowerCase()) !== -1;
 }
 
-function PagedItems(ko, filter) {
+function PagedItems(ko, filter, root, items) {
     var self = this;
-    self.items = ko.observableArray();
+    self.items = items;
 
     self.filteredItems = ko.computed(function () {
         if (!filter()) {
@@ -69,7 +65,7 @@ function PagedItems(ko, filter) {
 
     self.addItem = function (item) {
         self.items.push(item);
-        self.items.sort(ItemSortComparer);
+        self.items.sort(root.ItemSortComparer);
     };
 
     self.removeItem = function (item) {
@@ -83,8 +79,8 @@ module.exports = function (ko, $) {
         viewModel: function (root) {
             var self = this;
             self.filterText = ko.observable();
-            self.acquired = new PagedItems(ko, self.filterText);
-            self.required = new PagedItems(ko, self.filterText);
+            self.acquired = new PagedItems(ko, self.filterText, root, ko.observableArray());
+            self.required = new PagedItems(ko, self.filterText, root, root.requiredItems);
 
             self._moveItem = function (item, from, to) {
                 from.removeItem(item);
@@ -101,38 +97,11 @@ module.exports = function (ko, $) {
                 self.required.addItem(item);
             };
 
-            self.init = function () {
-
-                $.ajax({
-                    type: "GET",
-                    url: 'data.json',
-                    dataType: "json",
-                    mimeType: "application/json"
-                })
-                    .done(function (data) {
-
-                        let list = [];
-                        for (let index = 0; index < data.itemids.length; index++) {
-                            const name = data.items[data.itemids[index]];
-                            list.push({
-                                id: data.itemids[index],
-                                name: name
-                            });
-                        }
-                        list.sort(ItemSortComparer);
-                        self.required.items(list);
-                    })
-                    .fail(function (jqXHR, textStatus, errorThrown) {
-                        root.errors.error(errorThrown);
-                    });
-            };
-
             self.onRoutedEvent = function (eventName, args) {
 
             };
 
             root.eventRouter.subscribe(self.onRoutedEvent);
-            self.init();
         },
         template: view
     };

@@ -5,64 +5,53 @@ module.exports = function (ko, $) {
     return {
         viewModel: function (root) {
             var self = this;
-            self.tiers = ko.observableArray();
+            self.tiers = root.tiers;
 
-            self.init = function () {
+            self.filteredRelics = ko.computed(function () {
+                if (!root.requiredItems())
+                    return self.tiers();
 
-                self.tiers([{
-                    name: 'Axi',
-                    relics: [{ name: 'A1' },
-                    { name: 'A2' }
-                    ]
-                }, {
-                    name: 'Lith',
-                    relics: [{ name: 'A1' },
-                    { name: 'A2' }
-                    ]
-                }, {
-                    name: 'Neo',
-                    relics: [{ name: 'A1' },
-                    { name: 'A2' }
-                    ]
-                }, {
-                    name: 'Meso',
-                    relics: [{ name: 'A1' },
-                    { name: 'A2' }
-                    ]
-                }])
-                // $.ajax({
-                //     type: "GET",
-                //     url: 'data.json',
-                //     dataType: "json",
-                //     mimeType: "application/json"
-                // })
-                //     .done(function (data) {
+                let tierLookup = {};
+                let result = [];
 
-                //         let list = [];
-                //         for (let index = 0; index < data.itemids.length; index++) {
-                //             const name = data.items[data.itemids[index]];
-                //             list.push({
-                //                 id: data.itemids[index],
-                //                 name: name,
-                //                 owned: false
-                //             });
-                //         }
-                //         list.sort(function(a, b){
-                //             return a.name > b.name;
-                //         });
-                //         self.tiers(list);
-                //     })
-                //     .fail(function (jqXHR, textStatus, errorThrown) {
-                //         root.errors.error(errorThrown);
-                //     });
-            };
+                for (let index = 0; index < root.requiredItems().length; index++) {
+                    const requiredItem = root.requiredItems()[index];
+                    const relics = root.itemRelicLookup[requiredItem.id].relics;
+
+                    for (let r = 0; r < relics.length; r++) {
+                        const relic = relics[r];
+
+                        if (!tierLookup[relic.tier]) {
+                            tierLookup[relic.tier] = {
+                                index: result.length,
+                                relics: {}
+                            };
+                            result.push({
+                                name: relic.tier,
+                                relics: []
+                            });
+                        }
+
+                        var tierIndex = tierLookup[relic.tier].index;
+                        if (!tierLookup[relic.tier].relics[relic.name]) {
+                            tierLookup[relic.tier].relics[relic.name] = true;
+                            result[tierIndex].relics.push(relic.name);
+                            result[tierIndex].relics.sort();
+                        }
+                    }
+                }
+
+                result.sort(function (a, b) {
+                    return a.name > b.name ? 1 : -1;
+                });
+                return result;
+            });
 
             self.onRoutedEvent = function (eventName, args) {
 
             };
 
             root.eventRouter.subscribe(self.onRoutedEvent);
-            self.init();
         },
         template: view
     };
