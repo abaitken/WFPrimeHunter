@@ -1,18 +1,54 @@
 <h1>INVENTORY</h1>
 
-<table class="table">
-    <thead class="thead-dark">
-        <tr>
-            <th scope="col">Item</th>
-            <th scope="col">Owned</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- ko foreach: items -->
-        <tr>
-            <td data-bind="text: name"></td>
-            <td data-bind="text: owned"></td>
-        </tr>
-        <!-- /ko -->
-    </tbody>
-</table>
+<div class="container">
+    <div class="row">
+        <div class="col" data-bind="with: required">
+            <h2>Required</h2>
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Item</th>
+                        <th scope="col">&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- ko foreach: pagedItems -->
+                    <tr>
+                        <td data-bind="text: name"></td>
+                        <td scope="col">
+                            <button type="button" class="btn btn-default"
+                                data-bind="click: $parents[1].itemAcquired, clickBubble: false">
+                                <i class="fas fa-greater-than"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <!-- /ko -->
+                </tbody>
+            </table>
+        </div>
+        <div class="col" data-bind="with: acquired">
+            <h2>Acquired</h2>
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">&nbsp;</th>
+                        <th scope="col">Item</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- ko foreach: pagedItems -->
+                    <tr>
+                        <td scope="col">
+                            <button type="button" class="btn btn-default"
+                                data-bind="click: $parents[1].itemLost, clickBubble: false">
+                                <i class="fas fa-less-than"></i>
+                            </button>
+                        </td>
+                        <td data-bind="text: name"></td>
+                    </tr>
+                    <!-- /ko -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
