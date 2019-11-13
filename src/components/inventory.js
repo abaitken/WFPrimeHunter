@@ -97,6 +97,10 @@ module.exports = function (ko, $) {
                 self.required.addItem(item);
             };
 
+            self.clearFilter = function () {
+                self.filterText('');
+            };
+
             self.onRoutedEvent = function (eventName, args) {
 
             };
