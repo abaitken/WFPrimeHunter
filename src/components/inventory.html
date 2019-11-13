@@ -4,6 +4,11 @@
     <div class="row">
         <div class="col" data-bind="with: required">
             <h2>Required</h2>
+            <a href="#" data-bind="click: previous">&lt;</a>
+            <!-- ko foreach: pages -->
+            <a href="#" data-bind="text: $data, click: $parent.gotoPage"></a>
+            <!-- /ko -->
+            <a href="#" data-bind="click: next">&gt;</a>
             <table class="table">
                 <thead class="thead-dark">
                     <tr>
@@ -28,6 +33,11 @@
         </div>
         <div class="col" data-bind="with: acquired">
             <h2>Acquired</h2>
+            <a href="#" data-bind="click: previous">&lt;</a>
+            <!-- ko foreach: pages -->
+            <a href="#" data-bind="text: $data, click: $parent.gotoPage"></a>
+            <!-- /ko -->
+            <a href="#" data-bind="click: next">&gt;</a>
             <table class="table">
                 <thead class="thead-dark">
                     <tr>
