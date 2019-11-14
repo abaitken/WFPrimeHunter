@@ -1,6 +1,6 @@
 const view = require("./inventory.html");
 
-const PAGE_SIZE = 25;
+const PAGE_SIZE = 15;
 
 function StringContainsCaseInsensitive(haystack, needle) {
     return haystack.toLowerCase().indexOf(needle.toLowerCase()) !== -1;
@@ -68,9 +68,34 @@ function PagedItems(ko, filter, root, items) {
         self.items.sort(root.ItemSortComparer);
     };
 
+    self.addPage = function (items) {
+        for (let index = 0; index < items.length; index++) {
+            const item = items[index];
+            self.items.push(item);
+        }
+        self.items.sort(root.ItemSortComparer);
+    };
+
     self.removeItem = function (item) {
         var index = self.items().indexOf(item);
         self.items.splice(index, 1);
+    };
+
+    self.removePage = function () {
+        if (!filter()) {
+            var startIndex = self.pageIndex() * PAGE_SIZE;
+            return self.items.splice(startIndex, startIndex + PAGE_SIZE);
+        }
+        else {
+            var result = self.pagedItems();
+
+            for (let index = 0; index < result.length; index++) {
+                const item = result[index];
+                self.removeItem(item);
+            }
+
+            return result;
+        }
     };
 };
 
@@ -95,6 +120,16 @@ module.exports = function (ko, $) {
             self.itemLost = function (item) {
                 self.acquired.removeItem(item);
                 self.required.addItem(item);
+            };
+
+            self.pageAcquired = function () {
+                var items = self.required.removePage();
+                self.acquired.addPage(items);
+            };
+
+            self.pageLost = function (item) {
+                var items = self.acquired.removePage();
+                self.required.addPage(items);
             };
 
             self.clearFilter = function () {

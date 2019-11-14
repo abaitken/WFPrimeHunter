@@ -1,10 +1,8 @@
-<h1>INVENTORY</h1>
-
-
-<div class="container">
-
-
-    <div class="row justify-content-center">
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <h1>INVENTORY</h1>
+        </div>
         <div class="col-12 col-md-10 col-lg-8">
 
             <div class="card-body row no-gutters align-items-center">
@@ -17,74 +15,92 @@
                         placeholder="Search" data-bind="textInput: filterText">
                 </div>
                 <div class="col-auto">
-                    <button type="button" class="btn btn-default"
-                        data-bind="click: clearFilter, clickBubble: false">
+                    <button type="button" class="btn btn-default" data-bind="click: clearFilter, clickBubble: false">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
 
             </div>
         </div>
+
     </div>
+
 
     <div class="row">
         <div class="col" data-bind="with: required">
             <h2>Required</h2>
-            <a href="#" data-bind="click: previous">&lt;</a>
-            <!-- ko foreach: pages -->
-            <a href="#" data-bind="text: $data, click: $parent.gotoPage"></a>
-            <!-- /ko -->
-            <a href="#" data-bind="click: next">&gt;</a>
-            <table class="table">
-                <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">Item</th>
-                        <th scope="col">&nbsp;</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- ko foreach: pagedItems -->
-                    <tr>
-                        <td data-bind="text: name"></td>
-                        <td scope="col">
-                            <button type="button" class="btn btn-default"
-                                data-bind="click: $parents[1].itemAcquired, clickBubble: false">
-                                <i class="fas fa-greater-than"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <!-- /ko -->
-                </tbody>
-            </table>
+            <span>
+                <a href="#" data-bind="click: previous">&lt;</a>
+                <!-- ko foreach: pages -->
+                <a href="#" data-bind="text: $data, click: $parent.gotoPage"></a>
+                <!-- /ko -->
+                <a href="#" data-bind="click: next">&gt;</a>
+            </span>
+            <div class="overflow-auto">
+                <table class="table table-sm">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Item</th>
+                            <th scope="col">&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- ko foreach: pagedItems -->
+                        <tr>
+                            <td data-bind="text: name"></td>
+                            <td scope="col">
+                                <button type="button" class="btn btn-default"
+                                    data-bind="click: $parents[1].itemAcquired, clickBubble: false">
+                                    <i class="fas fa-greater-than"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <!-- /ko -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-sm-1 align-self-center">
+            <button type="button" class="btn btn-default" data-bind="click: pageAcquired, clickBubble: false">
+                <i class="fas fa-angle-double-right"></i>
+            </button>
+            <br />
+            <button type="button" class="btn btn-default" data-bind="click: pageLost, clickBubble: false">
+                <i class="fas fa-angle-double-left"></i>
+            </button>
         </div>
         <div class="col" data-bind="with: acquired">
             <h2>Acquired</h2>
-            <a href="#" data-bind="click: previous">&lt;</a>
-            <!-- ko foreach: pages -->
-            <a href="#" data-bind="text: $data, click: $parent.gotoPage"></a>
-            <!-- /ko -->
-            <a href="#" data-bind="click: next">&gt;</a>
-            <table class="table">
-                <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">&nbsp;</th>
-                        <th scope="col">Item</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- ko foreach: pagedItems -->
-                    <tr>
-                        <td scope="col">
-                            <button type="button" class="btn btn-default"
-                                data-bind="click: $parents[1].itemLost, clickBubble: false">
-                                <i class="fas fa-less-than"></i>
-                            </button>
-                        </td>
-                        <td data-bind="text: name"></td>
-                    </tr>
-                    <!-- /ko -->
-                </tbody>
-            </table>
+            <span>
+                <a href="#" data-bind="click: previous">&lt;</a>
+                <!-- ko foreach: pages -->
+                <a href="#" data-bind="text: $data, click: $parent.gotoPage"></a>
+                <!-- /ko -->
+                <a href="#" data-bind="click: next">&gt;</a>
+            </span>
+            <div class="overflow-auto">
+                <table class="table table-sm">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">&nbsp;</th>
+                            <th scope="col">Item</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- ko foreach: pagedItems -->
+                        <tr>
+                            <td scope="col">
+                                <button type="button" class="btn btn-default"
+                                    data-bind="click: $parents[1].itemLost, clickBubble: false">
+                                    <i class="fas fa-less-than"></i>
+                                </button>
+                            </td>
+                            <td data-bind="text: name"></td>
+                        </tr>
+                        <!-- /ko -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
