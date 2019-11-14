@@ -164,6 +164,7 @@ function ViewModel() {
         self.requiredItems(list);
 
         self.tiers(data.tiers);
+        self.eventRouter.raise('dataloaded', {});
       })
       .fail(function (jqXHR, textStatus, errorThrown) {
         root.errors.error(errorThrown);

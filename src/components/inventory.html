@@ -2,6 +2,11 @@
     <div class="row">
         <div class="col">
             <h1>INVENTORY</h1>
+
+            <button type="button" class="btn btn-default" data-bind="click: saveData, clickBubble: false">
+                <i class="fas fa-save"></i>
+            </button>
+            <div id="savedText" class="hide">Saved!</div>
         </div>
         <div class="col-12 col-md-10 col-lg-8">
 
@@ -28,7 +33,7 @@
 
     <div class="row">
         <div class="col" data-bind="with: required">
-            <h2>Required</h2>
+            <h2><i class="fas fa-minus-square"></i> Required</h2>
             <span>
                 <a href="#" data-bind="click: previous">&lt;</a>
                 <!-- ko foreach: pages -->
@@ -48,7 +53,7 @@
                         <!-- ko foreach: pagedItems -->
                         <tr>
                             <td>
-                                <div data-bind="text: name"></div>                                
+                                <div data-bind="text: name"></div>
                                 <div data-bind="relics: relics" class="font-italic text-muted"></div>
                             </td>
                             <td scope="col">
@@ -73,7 +78,7 @@
             </button>
         </div>
         <div class="col" data-bind="with: acquired">
-            <h2>Acquired</h2>
+            <h2><i class="fas fa-check-square"></i> Acquired</h2>
             <span>
                 <a href="#" data-bind="click: previous">&lt;</a>
                 <!-- ko foreach: pages -->

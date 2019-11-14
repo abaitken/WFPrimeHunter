@@ -46,7 +46,7 @@ function PagedItems(ko, filter, root, items) {
 
     self.updateCurrentPage = function () {
         var pageCount = self.pageCount();
-        if(self.pageIndex() >= pageCount)
+        if (self.pageIndex() >= pageCount)
             self.pageIndex(pageCount);
     };
 
@@ -92,7 +92,7 @@ function PagedItems(ko, filter, root, items) {
     self.removePage = function () {
         if (!filter()) {
             var startIndex = self.pageIndex() * PAGE_SIZE;
-            var result = self.items.splice(startIndex, startIndex + PAGE_SIZE);
+            var result = self.items.splice(startIndex, PAGE_SIZE);
             self.updateCurrentPage();
             return result;
         }
@@ -138,37 +138,73 @@ module.exports = function (ko, $) {
             self.acquired = new PagedItems(ko, self.filterText, root, ko.observableArray());
             self.required = new PagedItems(ko, self.filterText, root, root.requiredItems);
 
-            self._moveItem = function (item, from, to) {
-                from.removeItem(item);
-                to.addItem(item);
-            };
-
             self.itemAcquired = function (item) {
                 self.required.removeItem(item);
                 self.acquired.addItem(item);
+                //self.saveData();
             };
 
             self.itemLost = function (item) {
                 self.acquired.removeItem(item);
                 self.required.addItem(item);
+                //self.saveData();
             };
 
             self.pageAcquired = function () {
                 var items = self.required.removePage();
                 self.acquired.addPage(items);
+                //self.saveData();
             };
 
             self.pageLost = function (item) {
                 var items = self.acquired.removePage();
                 self.required.addPage(items);
+                //self.saveData();
             };
 
             self.clearFilter = function () {
                 self.filterText('');
             };
 
-            self.onRoutedEvent = function (eventName, args) {
+            self.loadData = function () {
+                let storedacquiredIds = localStorage.getItem('acquiredIds');
 
+                if (!storedacquiredIds)
+                    return;
+
+                var acquiredIds = JSON.parse(storedacquiredIds);
+
+                for (let index = 0; index < self.required.items().length; index++) {
+                    const item = self.required.items()[index];
+                    if (acquiredIds[item.id]) {
+                        self.required.removeItem(item);
+                        self.acquired.addItem(item);
+                    }
+                }
+
+            };
+
+            self.saveData = function () {
+                let acquiredIds = {};
+                for (let index = 0; index < self.acquired.items().length; index++) {
+                    const item = self.acquired.items()[index];
+                    acquiredIds[item.id] = true;
+                }
+                localStorage.setItem('acquiredIds', JSON.stringify(acquiredIds));
+                let savedTextElement = $('#savedText');
+                savedTextElement.removeClass(['hide', 'fade-hide']);
+                setTimeout(function () {
+                    savedTextElement.addClass(['fade-hide']);
+                }, 2000);
+
+            };
+
+            self.onRoutedEvent = function (eventName, args) {
+                switch (eventName) {
+                    case 'dataloaded':
+                        self.loadData();
+                        break;
+                }
             };
 
             root.eventRouter.subscribe(self.onRoutedEvent);
