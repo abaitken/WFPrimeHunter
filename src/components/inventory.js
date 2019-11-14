@@ -7,6 +7,7 @@ function StringContainsCaseInsensitive(haystack, needle) {
 }
 
 function PagedItems(ko, filter, root, items) {
+
     var self = this;
     self.items = items;
 
@@ -42,6 +43,12 @@ function PagedItems(ko, filter, root, items) {
         var startIndex = self.pageIndex() * PAGE_SIZE;
         return self.filteredItems().slice(startIndex, startIndex + PAGE_SIZE);
     });
+
+    self.updateCurrentPage = function () {
+        var pageCount = self.pageCount();
+        if(self.pageIndex() >= pageCount)
+            self.pageIndex(pageCount);
+    };
 
     self.hasPrevious = ko.computed(function () {
         return self.pageIndex() !== 0;
@@ -79,12 +86,15 @@ function PagedItems(ko, filter, root, items) {
     self.removeItem = function (item) {
         var index = self.items().indexOf(item);
         self.items.splice(index, 1);
+        self.updateCurrentPage();
     };
 
     self.removePage = function () {
         if (!filter()) {
             var startIndex = self.pageIndex() * PAGE_SIZE;
-            return self.items.splice(startIndex, startIndex + PAGE_SIZE);
+            var result = self.items.splice(startIndex, startIndex + PAGE_SIZE);
+            self.updateCurrentPage();
+            return result;
         }
         else {
             var result = self.pagedItems();
@@ -94,6 +104,7 @@ function PagedItems(ko, filter, root, items) {
                 self.removeItem(item);
             }
 
+            self.updateCurrentPage();
             return result;
         }
     };
@@ -102,6 +113,26 @@ function PagedItems(ko, filter, root, items) {
 module.exports = function (ko, $) {
     return {
         viewModel: function (root) {
+
+            ko.bindingHandlers.relics = {
+                init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+                    var relics = valueAccessor();
+                    let result = "";
+
+                    for (let index = 0; index < relics.length; index++) {
+                        const relic = relics[index];
+
+                        if (result.length > 0)
+                            result += ', ';
+                        result += relic.tier + ' ' + relic.name + ': ' + relic.rarity;
+                    }
+
+                    $(element).text('(' + result + ')');
+                },
+                update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+                }
+            };
+
             var self = this;
             self.filterText = ko.observable();
             self.acquired = new PagedItems(ko, self.filterText, root, ko.observableArray());

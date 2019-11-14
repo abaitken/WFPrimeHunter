@@ -151,10 +151,13 @@ function ViewModel() {
         self.itemRelicLookup = data.items;
         let list = [];
         for (let index = 0; index < data.itemids.length; index++) {
-          const name = self.itemRelicLookup[data.itemids[index]].name;
+          const id = data.itemids[index];
+          const item = self.itemRelicLookup[id];
+
           list.push({
-            id: data.itemids[index],
-            name: name
+            id: id,
+            name: item.name,
+            relics: item.relics
           });
         }
         list.sort(self.ItemSortComparer);

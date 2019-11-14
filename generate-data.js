@@ -70,7 +70,8 @@ function restructureData(data, callback) {
 
         items[reward['_id']].relics.push({
           tier: tier,
-          name: name
+          name: name,
+          rarity: reward['rarity']
         });
         relics[tier][name].rewards.push({
           id: reward['_id'],

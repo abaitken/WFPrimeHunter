@@ -36,7 +36,7 @@
                 <!-- /ko -->
                 <a href="#" data-bind="click: next">&gt;</a>
             </span>
-            <div class="overflow-auto">
+            <div class="itemList overflow-auto">
                 <table class="table table-sm">
                     <thead class="thead-dark">
                         <tr>
@@ -47,7 +47,10 @@
                     <tbody>
                         <!-- ko foreach: pagedItems -->
                         <tr>
-                            <td data-bind="text: name"></td>
+                            <td>
+                                <div data-bind="text: name"></div>                                
+                                <div data-bind="relics: relics" class="font-italic text-muted"></div>
+                            </td>
                             <td scope="col">
                                 <button type="button" class="btn btn-default"
                                     data-bind="click: $parents[1].itemAcquired, clickBubble: false">
@@ -78,7 +81,7 @@
                 <!-- /ko -->
                 <a href="#" data-bind="click: next">&gt;</a>
             </span>
-            <div class="overflow-auto">
+            <div class="itemList overflow-auto">
                 <table class="table table-sm">
                     <thead class="thead-dark">
                         <tr>
