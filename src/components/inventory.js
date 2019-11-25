@@ -76,17 +76,18 @@ function PagedItems(ko, filter, root, items) {
     };
 
     self.addPage = function (items) {
-        for (let index = 0; index < items.length; index++) {
-            const item = items[index];
-            self.items.push(item);
-        }
+        ko.utils.arrayPushAll(self.items, items);
         self.items.sort(root.ItemSortComparer);
     };
 
-    self.removeItem = function (item) {
+    self.removeItem = function (item, update) {
+        if (update === undefined) update = true;
+
         var index = self.items().indexOf(item);
         self.items.splice(index, 1);
-        self.updateCurrentPage();
+
+        if (update)
+            self.updateCurrentPage();
     };
 
     self.removePage = function () {
@@ -101,12 +102,21 @@ function PagedItems(ko, filter, root, items) {
 
             for (let index = 0; index < result.length; index++) {
                 const item = result[index];
-                self.removeItem(item);
+                self.removeItem(item, false);
             }
 
             self.updateCurrentPage();
             return result;
         }
+    };
+};
+
+function Range() {
+    var self = this;
+    self.from = -1;
+    self.to = -1;
+    self.length = function () {
+        return self.to - self.from + 1;
     };
 };
 
@@ -173,15 +183,37 @@ module.exports = function (ko, $) {
                     return;
 
                 var acquiredIds = JSON.parse(storedacquiredIds);
+                let acquiredItems = [];
+                let removeRanges = [];
+
+                let currentRange = new Range();
 
                 for (let index = 0; index < self.required.items().length; index++) {
                     const item = self.required.items()[index];
                     if (acquiredIds[item.id]) {
-                        self.required.removeItem(item);
-                        self.acquired.addItem(item);
+
+                        if (currentRange.from == -1) {
+                            currentRange.from = index;
+                        }
+                        currentRange.to = index;
+
+                        acquiredItems.push(item);
+                    }
+                    else if (currentRange.from != -1) {
+                        removeRanges.push(currentRange);
+                        currentRange = new Range();
                     }
                 }
 
+                if (currentRange.from != -1)
+                    removeRanges.push(currentRange);
+
+                for (let index = removeRanges.length - 1; index >= 0; index--) {
+                    const range = removeRanges[index];
+                    self.required.items.splice(range.from, range.length());
+                }
+
+                self.acquired.addPage(acquiredItems);
             };
 
             self.saveData = function () {
@@ -190,13 +222,22 @@ module.exports = function (ko, $) {
                     const item = self.acquired.items()[index];
                     acquiredIds[item.id] = true;
                 }
-                localStorage.setItem('acquiredIds', JSON.stringify(acquiredIds));
+                var storeJson = JSON.stringify(acquiredIds);
+                localStorage.setItem('acquiredIds', storeJson);
                 let savedTextElement = $('#savedText');
                 savedTextElement.removeClass(['hide', 'fade-hide']);
                 setTimeout(function () {
                     savedTextElement.addClass(['fade-hide']);
                 }, 2000);
+            };
 
+            self.clearData = function () {
+                localStorage.clear();
+                let savedTextElement = $('#savedText');
+                savedTextElement.removeClass(['hide', 'fade-hide']);
+                setTimeout(function () {
+                    savedTextElement.addClass(['fade-hide']);
+                }, 2000);
             };
 
             self.onRoutedEvent = function (eventName, args) {
