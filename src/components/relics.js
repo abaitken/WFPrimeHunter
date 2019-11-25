@@ -15,6 +15,21 @@ module.exports = function (ko, $) {
             var self = this;
             self.tiers = root.tiers;
 
+            self.tiersNavigation = ko.computed(function () {
+                let result = [];
+
+                if(self.tiers() !== undefined)
+                    for (let index = 0; index < self.tiers().length; index++) {
+                        const tier = self.tiers()[index];
+                        result.push({
+                            name: tier.name,
+                            link: '#' + tier.name
+                        })
+                    }
+
+                return result;
+            });
+
             self.filteredRelics = ko.computed(function () {
                 if (!root.requiredItems())
                     return self.tiers();

@@ -1,13 +1,23 @@
+<a id="top"></a>
 <h1>RELICS</h1>
 
 <div class="container">
+    <ul class="nav justify-content-center">
+        <!-- ko foreach: tiersNavigation -->
+        <li class="nav-item">
+            <a class="nav-link" data-bind="text: name, attr: { href: link }"></a>
+        </li>
+        <!-- /ko -->
+    </ul>
 
     <!-- ko foreach: filteredRelics -->
+    <a data-bind="attr: { id: name }"></a>
     <h2 data-bind="text: name"></h2>
+    <a href="#top">top</a>
     <div class="row">
         <!-- ko foreach: relics -->
         <div class="col-3 relic-card">
-            <div data-bind="text: name"></div>
+            <h4 data-bind="text: name"></h4>
 
             <!-- ko foreach: items -->
             <div class="reward" data-bind="text: name, rewardClass: rarity"></div>
