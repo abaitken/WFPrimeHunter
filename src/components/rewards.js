@@ -2,6 +2,7 @@ const view = require("./rewards.html");
 
 module.exports = function (ko, $) {
     return {
+        name: 'REWARDS',
         viewModel: function (root) {
             ko.bindingHandlers.rewardClass = {
                 init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {

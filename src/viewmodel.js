@@ -6,27 +6,20 @@ import '@fortawesome/fontawesome-free/js/all.js'
 import '@fortawesome/fontawesome-free/css/all.css'
 import './custom.scss';
 
-const inventory = require("./components/inventory")(ko, $);
-ko.components.register("inventory", inventory);
+let views = [];
 
-const rewards = require("./components/rewards")(ko, $);
-ko.components.register("rewards", rewards);
+let components = ['introduction', 'inventory', 'rewards', 'relics'];
 
-const introduction = require("./components/introduction")(ko, $);
-ko.components.register("introduction", introduction);
+for (let index = 0; index < components.length; index++) {
+  const componentId = components[index];
+  const component = require("./components/" + componentId)(ko, $);
+  ko.components.register(componentId, component);
 
-var views = [{
-  name: 'INTRODUCTION',
-  id: 'introduction'
-},
-{
-  name: 'INVENTORY',
-  id: 'inventory'
-},
-{
-  name: 'REWARDS',
-  id: 'rewards'
-}];
+  views.push({
+    name: component.name,
+    id: componentId
+  })
+}
 
 ko.bindingHandlers.commandId = {
   init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {

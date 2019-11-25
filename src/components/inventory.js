@@ -147,6 +147,7 @@ function Range() {
 
 module.exports = function (ko, $) {
     return {
+        name: 'INVENTORY',
         viewModel: function (root) {
 
             ko.bindingHandlers.relics = {

@@ -1,8 +1,8 @@
-const view = require("./introduction.html");
+const view = require("./relics.html");
 
 module.exports = function (ko, $) {
     return {
-        name: 'INTRODUCTION',
+        name: 'RELICS',
         viewModel: function (root) {
         },
         template: view
