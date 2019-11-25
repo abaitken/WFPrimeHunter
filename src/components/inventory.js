@@ -29,14 +29,32 @@ function PagedItems(ko, filter, root, items) {
     });
     self.pages = ko.computed(function () {
         let result = [];
-        for (let index = 0; index <= self.pageCount(); index++) {
-            result.push(index + 1);
+        let pageCount = self.pageCount();
+        if (pageCount < 0)
+            return result;
+
+        let currentIndex = self.pageIndex();
+        var startIndex = pageCount <= 10 || currentIndex <= 5
+            ? 0
+            : Math.min(Math.max(currentIndex - 5, 0), 10);
+
+        var endIndex = pageCount <= 10 || pageCount - currentIndex <= 5
+            ? pageCount
+            : Math.max(Math.min(currentIndex + 5, pageCount), 10);
+
+        for (let index = startIndex; index <= endIndex; index++) {
+            result.push({
+                text: index + 1,
+                pageNumber: index + 1,
+                isActive: currentIndex === index
+            });
         }
+
         return result;
     });
 
-    self.gotoPage = function (pageNumber) {
-        self.pageIndex(pageNumber - 1);
+    self.gotoPage = function (page) {
+        self.pageIndex(page.pageNumber - 1);
     };
 
     self.pagedItems = ko.computed(function () {
@@ -46,8 +64,14 @@ function PagedItems(ko, filter, root, items) {
 
     self.updateCurrentPage = function () {
         var pageCount = self.pageCount();
-        if (self.pageIndex() >= pageCount)
+        var pageIndex = self.pageIndex();
+
+        if (pageIndex >= pageCount)
             self.pageIndex(pageCount);
+        else if (pageIndex <= 0)
+            self.pageIndex(0);
+        else
+            self.pageIndex(pageIndex);
     };
 
     self.hasPrevious = ko.computed(function () {
@@ -65,7 +89,7 @@ function PagedItems(ko, filter, root, items) {
     }
 
     self.previous = function () {
-        if (self.pageIndex() != 0) {
+        if (self.pageIndex() > 0) {
             self.pageIndex(self.pageIndex() - 1);
         }
     }
@@ -78,6 +102,7 @@ function PagedItems(ko, filter, root, items) {
     self.addPage = function (items) {
         ko.utils.arrayPushAll(self.items, items);
         self.items.sort(root.ItemSortComparer);
+        self.updateCurrentPage();
     };
 
     self.removeItem = function (item, update) {
@@ -142,9 +167,27 @@ module.exports = function (ko, $) {
                 update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
                 }
             };
+            ko.bindingHandlers.activePage = {
+                init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+                    var value = valueAccessor();
+
+                    if (value.isActive)
+                        $(element).addClass('active');
+                    else
+                        $(element).removeClass('active');
+                },
+                update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+                }
+            };
 
             var self = this;
             self.filterText = ko.observable();
+
+            self.filterText.subscribe(function () {
+                self.acquired.pageIndex(0);
+                self.required.pageIndex(0);
+            });
+
             self.acquired = new PagedItems(ko, self.filterText, root, ko.observableArray());
             self.required = new PagedItems(ko, self.filterText, root, root.requiredItems);
 
