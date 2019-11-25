@@ -36,6 +36,7 @@ function restructureData(data, callback) {
 
   let tiers = [];
   let tierLookup = {};
+  let rewardTiers = [0, 0, 0, 1, 1, 2];
 
   for (let index = 0; index < data['relics'].length; index++) {
     const element = data['relics'][index];
@@ -58,6 +59,13 @@ function restructureData(data, callback) {
 
       tiers[tierLookup[tier]].relics.push(name);
 
+      if (element['rewards'].length != 6)
+        throw 'Expected 6 rewards';
+
+      element['rewards'].sort(function (a, b) {
+        return a['chance'] > b['chance'] ? -1 : 1;
+      });
+
       for (let j = 0; j < element['rewards'].length; j++) {
         const reward = element['rewards'][j];
         if (!items[reward['_id']]) {
@@ -71,11 +79,11 @@ function restructureData(data, callback) {
         items[reward['_id']].relics.push({
           tier: tier,
           name: name,
-          rarity: reward['rarity']
+          rarity: rewardTiers[j]
         });
         relics[tier][name].rewards.push({
           id: reward['_id'],
-          rarity: reward['rarity']
+          rarity: rewardTiers[j]
         });
       }
     }

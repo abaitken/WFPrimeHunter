@@ -6,7 +6,13 @@
     <h2 data-bind="text: name"></h2>
     <div class="row">
         <!-- ko foreach: relics -->
-        <div class="col" data-bind="text: $data"></div>
+        <div class="col-3 relic-card">
+            <div data-bind="text: name"></div>
+
+            <!-- ko foreach: items -->
+            <div class="reward" data-bind="text: name, rewardClass: rarity"></div>
+            <!-- /ko -->
+        </div>
         <!-- /ko -->
     </div>
     <!-- /ko -->

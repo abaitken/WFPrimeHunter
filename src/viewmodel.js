@@ -12,49 +12,6 @@ ko.components.register("inventory", inventory);
 const relics = require("./components/relics")(ko, $);
 ko.components.register("relics", relics);
 
-ko.bindingHandlers.collapseHeader = {
-  init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      // This will be called when the binding is first applied to an element
-      // Set up any initial state, event handlers, etc. here
-      var value = valueAccessor();
-      $(element).attr('id', 'heading' + value);
-  },
-  update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      // This will be called once when the binding is first applied to an element,
-      // and again whenever any observables/computeds that are accessed change
-      // Update the DOM element based on the supplied values here.
-  }
-};
-ko.bindingHandlers.collapseButton = {
-  init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      // This will be called when the binding is first applied to an element
-      // Set up any initial state, event handlers, etc. here
-      var value = valueAccessor();
-      $(element).attr('data-target', '#' + value);
-      $(element).attr('aria-expanded', 'false');
-      $(element).attr('aria-controls', value);
-  },
-  update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      // This will be called once when the binding is first applied to an element,
-      // and again whenever any observables/computeds that are accessed change
-      // Update the DOM element based on the supplied values here.
-  }
-};
-ko.bindingHandlers.collapseTarget = {
-  init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      // This will be called when the binding is first applied to an element
-      // Set up any initial state, event handlers, etc. here
-      var value = valueAccessor();
-      $(element).attr('data-target', '#' + value);
-      $(element).attr('aria-labelledby', 'heading' + value);
-  },
-  update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-      // This will be called once when the binding is first applied to an element,
-      // and again whenever any observables/computeds that are accessed change
-      // Update the DOM element based on the supplied values here.
-  }
-};
-
 function EventRouter() {
   this.subscribers = [];
   this.subscribe = function (callback) {

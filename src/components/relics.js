@@ -1,9 +1,17 @@
 const view = require("./relics.html");
 
-
 module.exports = function (ko, $) {
     return {
         viewModel: function (root) {
+            ko.bindingHandlers.rewardClass = {
+                init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+                    var rarity = valueAccessor();
+                    $(element).addClass('reward' + rarity);
+                },
+                update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+                }
+            };
+
             var self = this;
             self.tiers = root.tiers;
 
@@ -33,17 +41,43 @@ module.exports = function (ko, $) {
                         }
 
                         var tierIndex = tierLookup[relic.tier].index;
-                        if (!tierLookup[relic.tier].relics[relic.name]) {
-                            tierLookup[relic.tier].relics[relic.name] = true;
-                            result[tierIndex].relics.push(relic.name);
-                            result[tierIndex].relics.sort();
+                        if (tierLookup[relic.tier].relics[relic.name] === undefined) {
+                            tierLookup[relic.tier].relics[relic.name] = result[tierIndex].relics.length;
+                            result[tierIndex].relics.push({
+                                name: relic.name,
+                                items: []
+                            });
                         }
+
+                        var relicIndex = tierLookup[relic.tier].relics[relic.name];
+                        result[tierIndex].relics[relicIndex].items.push({
+                            name: requiredItem.name,
+                            rarity: relic.rarity
+                        });
                     }
                 }
 
                 result.sort(function (a, b) {
                     return a.name > b.name ? 1 : -1;
                 });
+
+                for (let index = 0; index < result.length; index++) {
+                    const tier = result[index];
+                    tier.relics.sort(function (a, b) {
+                        return a.name > b.name ? 1 : -1;
+                    });
+
+                    for (let j = 0; j < tier.relics.length; j++) {
+                        const relic = tier.relics[j];
+                        relic.items.sort(function (a, b) {
+
+                            if (a.rarity == b.rarity)
+                                return a.name > b.name ? 1 : -1;
+
+                            return a.rarity > b.rarity ? 1 : -1;
+                        });
+                    }
+                }
                 return result;
             });
 
