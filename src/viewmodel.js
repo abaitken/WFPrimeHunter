@@ -9,8 +9,8 @@ import './custom.scss';
 const inventory = require("./components/inventory")(ko, $);
 ko.components.register("inventory", inventory);
 
-const relics = require("./components/relics")(ko, $);
-ko.components.register("relics", relics);
+const rewards = require("./components/rewards")(ko, $);
+ko.components.register("rewards", rewards);
 
 const introduction = require("./components/introduction")(ko, $);
 ko.components.register("introduction", introduction);
@@ -24,8 +24,8 @@ var views = [{
   id: 'inventory'
 },
 {
-  name: 'RELICS',
-  id: 'relics'
+  name: 'REWARDS',
+  id: 'rewards'
 }];
 
 ko.bindingHandlers.commandId = {

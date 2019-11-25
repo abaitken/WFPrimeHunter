@@ -1,4 +1,4 @@
-const view = require("./relics.html");
+const view = require("./rewards.html");
 
 module.exports = function (ko, $) {
     return {
