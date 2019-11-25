@@ -12,19 +12,17 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <a class="navbar-brand" href="#">Prime Hunter</a>
 
-
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
       aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarColor01">
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item viewCommand clickable" id="inventoryCommand" data-bind="click: $root.inventoryCommand">
-          <a class="nav-link" href="#">INVENTORY</a>
+        <!-- ko foreach: views -->
+        <li class="nav-item viewCommand clickable" data-bind="click: $parent.switchViewCommand, commandId: id">
+          <a class="nav-link" href="#" data-bind="text: name"></a>
         </li>
-        <li class="nav-item viewCommand clickable" id="relicsCommand" data-bind="click: $root.relicsCommand">
-          <a class="nav-link" href="#">RELICS</a>
-        </li>
+        <!-- /ko -->
       </ul>
     </div>
   </nav>
@@ -44,18 +42,13 @@
 
 
     <div class="row">
-
-      <div class="col viewContainer" id="inventoryContainer" data-bind='component: {
-        name: "inventory",
+      <!-- ko foreach: views -->
+      <div class="col viewContainer" data-bind='component: {
+        name: $data.id,
         params: $root
-    }'>
-      </div>
-
-      <div class="col viewContainer" id="relicsContainer" data-bind='component: {
-        name: "relics",
-        params: $root
-    }'>
-      </div>
+    }, containerId: id'>
+    </div>
+      <!-- /ko -->
     </div>
   </div>
 

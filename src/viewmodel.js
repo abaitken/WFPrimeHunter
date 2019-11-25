@@ -12,6 +12,39 @@ ko.components.register("inventory", inventory);
 const relics = require("./components/relics")(ko, $);
 ko.components.register("relics", relics);
 
+const introduction = require("./components/introduction")(ko, $);
+ko.components.register("introduction", introduction);
+
+var views = [{
+  name: 'INTRODUCTION',
+  id: 'introduction'
+},
+{
+  name: 'INVENTORY',
+  id: 'inventory'
+},
+{
+  name: 'RELICS',
+  id: 'relics'
+}];
+
+ko.bindingHandlers.commandId = {
+  init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+      var value = valueAccessor();
+      $(element).attr('id', value + 'Command');
+  },
+  update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+  }
+};
+ko.bindingHandlers.containerId = {
+  init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+    var value = valueAccessor();
+    $(element).attr('id', value + 'Container');
+  },
+  update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+  }
+};
+
 function EventRouter() {
   this.subscribers = [];
   this.subscribe = function (callback) {
@@ -53,11 +86,12 @@ function ViewModel() {
 
   /* Reusable Fns */
   self.ItemSortComparer = function (a, b) {
-      return a.name > b.name ? 1 : -1;
+    return a.name > b.name ? 1 : -1;
   };
 
   self.eventRouter = new EventRouter();
   self.errors = new ErrorHandling();
+  self.views = views;
 
 
   self.indexOfArrayEx = function (array, propertyName, value) {
@@ -80,22 +114,18 @@ function ViewModel() {
     $('#' + containerPrefix + 'Container').show();
   };
 
-  self.inventoryCommand = function () {
-    self._focusContainer('inventory');
-  };
-
-  self.relicsCommand = function () {
-    self._focusContainer('relics');
+  self.switchViewCommand = function (data) {
+    self._focusContainer(data.id);
   };
 
   self.requiredItems = ko.observableArray();
-  self.tiers = ko.observable();
+  self.tiers = ko.observableArray();
   self.itemRelicLookup = {};
 
   /* INIT */
   self.Init = function () {
     ko.applyBindings(self);
-    self.inventoryCommand();
+    self.switchViewCommand(views[0]);
 
     $.ajax({
       type: "GET",
