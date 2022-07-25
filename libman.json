@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "bootstrap@5.2.0",
+      "destination": "src\\lib\\bootstrap"
+    },
+    {
+      "library": "jquery@3.6.0",
+      "destination": "src\\lib\\jquery"
+    },
+    {
+      "library": "knockout@3.5.1",
+      "destination": "src\\lib\\knockout"
+    },
+    {
+      "library": "require.js@2.3.6",
+      "destination": "src\\lib\\require.js"
+    },
+    {
+      "library": "require-text@2.0.12",
+      "destination": "src\\lib\\require-text"
+    },
+    {
+      "library": "font-awesome@6.1.1",
+      "destination": "src\\lib\\font-awesome"
+    }
+  ]
+}
