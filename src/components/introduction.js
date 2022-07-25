@@ -1,10 +1,3 @@
-const view = require("./introduction.html");
+function IntroductionViewModel() {
 
-module.exports = function (ko, $) {
-    return {
-        name: 'INTRODUCTION',
-        viewModel: function (root) {
-        },
-        template: view
-    };
-};
+}
