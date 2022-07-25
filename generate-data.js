@@ -105,7 +105,7 @@ function restructureData(data, callback) {
 function writeData(data) {
   console.log('Writing data');
   let raw = JSON.stringify(data);
-  fs.writeFileSync('bin/data.json', raw);
+  fs.writeFileSync('src/data.json', raw);
   console.log('Done');
 }
 
