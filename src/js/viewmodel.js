@@ -1,18 +1,3 @@
-function loadScript(url) {
-  return new Promise((resolve, reject) => {
-    $.ajax({
-      url: url,
-      dataType: "script",
-      success: function (data) {
-        resolve(data);
-      },
-      error: function (error) {
-        reject(error);
-      }
-    });
-  });
-}
-
 function loadView(url) {
   return new Promise((resolve, reject) => {
     $.ajax({
@@ -167,9 +152,6 @@ function ViewModel() {
       return new Promise((resolve, reject) => {
         loadView('components/' + componentDef.id + '.html')
           .then((view) => {
-            // loadScript('components/' + componentId + '.js')
-            //   .then((script) => {
-            //   });
             resolve({
               id: componentDef.id,
               name: componentDef.id.toUpperCase(),
